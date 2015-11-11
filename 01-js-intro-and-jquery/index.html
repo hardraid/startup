@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>JavaScript Intro and jQuery</title>
+	<script src="js/jquery-2.1.4.min.js" type="text/javascript" charset="utf-8"></script>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+	<div class="container">
+		<section class="main">
+			<p>Hello World</p>
+			<input type="text" class="alias" name="alias" id="alias" value="">
+		</section>
+		<button class="my-button" type="button">Meaningless</button>
+	</div>
+	<script>
+
+		function highlightName(data){
+			var search = 'Welcome ';
+			var name = data.response.slice(data.response.indexOf(search) + search.length, -1);
+			var highlight = $('<span />').addClass('highlight').html(name);
+			data.response = data.response.replace(name, highlight[0].outerHTML);
+		}
+
+		$(document).ready(function() {
+			$('.main').fadeIn(1000, function() {
+				$('.alias').focus();
+			});
+		});
+
+		$('.my-button').click(function(event) {
+			var name = $('.alias').val() || 'yourname';
+			$.ajax({
+				url: 'http://bootcamp.aws.af.cm/welcome/' + name
+			})
+			.done(function(data) {
+				if(!data.response){
+					if(typeof data == 'string'){
+						data = $.parseJSON(data);
+					}
+					if(data.error){
+						$('.main p').html(data.error);
+					} else {
+						$('.main p').html('Ups! an error has occurred');
+					}
+					$('.main p').addClass('error');
+				} else {
+					$('.main p').html(data.response);
+				}
+				highlightName(data);
+			})
+			.fail(function() {
+				$('.main p').html('Ups! an error has occurred');
+				$('.main p').addClass('error');
+			});
+		});
+	</script>
+</body>
+</html>
